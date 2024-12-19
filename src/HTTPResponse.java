@@ -28,7 +28,10 @@ public class HTTPResponse {
     }
 
     public static Path getResource(String requestLine) {
-        return Path.of(Arrays.asList(requestLine.split(" ")).get(1).replace("/", ""));
+        Path resourcePath = Path.of(Arrays.asList(requestLine.split(" ")).get(1).replace("/", ""));
+        if(Files.isDirectory(resourcePath)) return Path.of("index.html");
+
+        return resourcePath;
     }
 
     public boolean resourceExists(String requestLine) {
