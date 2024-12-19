@@ -1,3 +1,7 @@
+package com.om1cael.server;
+
+import com.om1cael.utils.HTTPResponse;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

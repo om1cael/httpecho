@@ -51,7 +51,7 @@
 1. Run the HTTP server:
 
    ```sh
-   java HTTPServer
+   java com.om1cael.server.HTTPServer
    ```
 
 2. The server will be accessible at `http://localhost:8080`. You can test its functionality by accessing resources like `http://localhost:8080/index.html` in your web browser, or by using the HTTP client.
@@ -60,13 +60,13 @@
 
 1. To simulate a `GET` request:
    ```sh
-   java HTTPClient
+   java com.om1cael.client.HTTPClient
    ```
 
 ## Configuration
 
 - The HTTP server and client come with default settings:
-  - The server listens on port `8080` but can be configured in the `HTTPServer` class.
+  - The server listens on port `8080` but can be configured in the `com.om1cael.server.HTTPServer` class.
   - The client sends requests to `http://localhost:8080` but can be adjusted accordingly.
 
 ## Contributing
