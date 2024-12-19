@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Arrays;
 
 public class HTTPServer {
     public static void main(String[] args) {
@@ -24,6 +25,12 @@ public class HTTPServer {
 
         if(!httpResponse.isGET(requestLine)) {
             dataSend.write(httpResponse.noGetResponse());
+            return;
+        }
+
+        if(!httpResponse.resourceExists(requestLine)) {
+            dataSend.write(httpResponse.notFoundResponse());
+            return;
         }
     }
 }
