@@ -16,6 +16,8 @@ public class HTTPResponse {
     public String notFoundResponse() {
         return "HTTP/1.1 404 Not Found\r\n"
                 + "Content-Type: text/html; charset=UTF-8\r\n"
+                + "\r\n"
+                + "This page was not found."
                 + "\r\n";
     }
 
