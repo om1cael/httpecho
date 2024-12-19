@@ -21,7 +21,6 @@ public class HTTPServer {
 
     private static void handleRequest(BufferedReader request, PrintWriter dataSend) throws IOException {
         HTTPResponse httpResponse = new HTTPResponse();
-        HTTPParser httpParser = new HTTPParser();
         String requestLine = request.readLine();
 
         if(!httpResponse.isGET(requestLine)) {
