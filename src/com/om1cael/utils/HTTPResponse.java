@@ -3,6 +3,8 @@ package com.om1cael.utils;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class HTTPResponse {
     public String getOKResponse(String requestLine) {
@@ -10,7 +12,7 @@ public class HTTPResponse {
 
         return "HTTP/1.1 200 OK\r\n"
                 + "Content-Type: text/html; charset=UTF-8\r\n"
-                + "Content-Length: " + httpParser.getContentLength(getResource(requestLine)) + "\r\n"
+                + "Content-Length: " + httpParser.getContentLength(getResource(requestLine), false) + "\r\n"
                 + "\r\n"
                 + httpParser.getResourceContent(getResource(requestLine));
     }
@@ -20,9 +22,18 @@ public class HTTPResponse {
 
         return "HTTP/1.1 200 OK\r\n"
                 + "Content-Type: text/css; charset=UTF-8\r\n"
-                + "Content-Length: " + httpParser.getContentLength(getResource(requestLine)) + "\r\n"
+                + "Content-Length: " + httpParser.getContentLength(getResource(requestLine), false) + "\r\n"
                 + "\r\n"
                 + httpParser.getResourceContent(getResource(requestLine));
+    }
+
+    public String getImageResponse(String requestLine) {
+        HTTPParser httpParser = new HTTPParser();
+
+        return "HTTP/1.1 200 OK\r\n"
+                + "Content-Type: image/" + this.getImage(requestLine) + "\r\n"
+                + "Content-Length: " + httpParser.getContentLength(getResource(requestLine), true) + "\r\n"
+                + "\r\n";
     }
 
     public String notFoundResponse() {
@@ -48,6 +59,17 @@ public class HTTPResponse {
 
     public boolean resourceExists(String requestLine) {
         return Files.exists(getResource(requestLine));
+    }
+
+    public String getImage(String requestLine) {
+        Pattern pattern = Pattern.compile("jpg|jpeg|png|gif|bmp");
+        Matcher matcher = pattern.matcher(requestLine);
+
+        if(matcher.find()) {
+            return matcher.group();
+        }
+
+        return null;
     }
 
     public boolean isCSS(String requestLine) {

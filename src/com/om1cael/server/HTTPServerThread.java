@@ -1,11 +1,9 @@
 package com.om1cael.server;
 
+import com.om1cael.utils.HTTPParser;
 import com.om1cael.utils.HTTPResponse;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 
 public class HTTPServerThread implements Runnable {
@@ -17,37 +15,65 @@ public class HTTPServerThread implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("New connection by " + socket.getLocalAddress() + " at thread " + Thread.currentThread().getName());
+        System.out.println("New request by " + socket.getLocalAddress() + " at thread " + Thread.currentThread().getName());
 
-        try(PrintWriter dataToSend = new PrintWriter(socket.getOutputStream());
+        try(DataOutputStream dataToSend = new DataOutputStream(socket.getOutputStream());
             BufferedReader clientRequest = new BufferedReader(new InputStreamReader(socket.getInputStream()))
         ) {
-            this.handleRequest(clientRequest, dataToSend);
-            dataToSend.flush();
+            if(!socket.isClosed()) {
+                this.handleRequest(clientRequest, dataToSend);
+                dataToSend.flush();
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void handleRequest(BufferedReader request, PrintWriter dataToSend) throws IOException {
+    private void handleRequest(BufferedReader request, DataOutputStream dataToSend) throws IOException {
         HTTPResponse httpResponse = new HTTPResponse();
+        HTTPParser httpParser = new HTTPParser();
         String requestLine = request.readLine();
 
         if(!httpResponse.isGET(requestLine)) {
-            dataToSend.write(httpResponse.notGetResponse());
+            dataToSend.writeUTF(httpResponse.notGetResponse());
             return;
         }
 
         if(!httpResponse.resourceExists(requestLine)) {
-            dataToSend.write(httpResponse.notFoundResponse());
+            dataToSend.writeUTF(httpResponse.notFoundResponse());
             return;
         }
 
         if(httpResponse.isCSS(requestLine)) {
-            dataToSend.write(httpResponse.getCSSResponse(requestLine));
+            dataToSend.writeUTF(httpResponse.getCSSResponse(requestLine));
             return;
         }
 
-        dataToSend.write(httpResponse.getOKResponse(requestLine));
+        if(httpResponse.getImage(requestLine) != null) {
+            sendImage(dataToSend, httpResponse, httpParser, requestLine);
+            return;
+        }
+
+        dataToSend.writeUTF(httpResponse.getOKResponse(requestLine));
+    }
+
+    public void sendImage(DataOutputStream dataToSend, HTTPResponse httpResponse, HTTPParser httpParser, String requestLine) {
+        final String headers = httpResponse.getImageResponse(requestLine);
+
+        byte[] buffer = new byte[4096];
+        byte[] imageContent = httpParser.getImageContent(HTTPResponse.getResource(requestLine));
+        int size;
+
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(imageContent)) {
+            dataToSend.write(headers.getBytes());
+
+            while((size = byteArrayInputStream.read(buffer)) != -1) {
+                dataToSend.write(buffer, 0, size);
+            }
+
+            dataToSend.flush();
+        } catch (IOException e) {
+            System.err.println("Error while sending the image: " + e.getMessage());
+        }
     }
 }
