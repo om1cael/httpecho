@@ -11,17 +11,7 @@ public class HTTPResponse {
         HTTPParser httpParser = new HTTPParser();
 
         return "HTTP/1.1 200 OK\r\n"
-                + "Content-Type: text/html; charset=UTF-8\r\n"
-                + "Content-Length: " + httpParser.getContentLength(getResource(requestLine), false) + "\r\n"
-                + "\r\n"
-                + httpParser.getResourceContent(getResource(requestLine));
-    }
-
-    public String getCSSResponse(String requestLine) {
-        HTTPParser httpParser = new HTTPParser();
-
-        return "HTTP/1.1 200 OK\r\n"
-                + "Content-Type: text/css; charset=UTF-8\r\n"
+                + "Content-Type: text/" + this.getFileExtension(requestLine) + "; charset=UTF-8\r\n"
                 + "Content-Length: " + httpParser.getContentLength(getResource(requestLine), false) + "\r\n"
                 + "\r\n"
                 + httpParser.getResourceContent(getResource(requestLine));
@@ -31,7 +21,7 @@ public class HTTPResponse {
         HTTPParser httpParser = new HTTPParser();
 
         return "HTTP/1.1 200 OK\r\n"
-                + "Content-Type: image/" + this.getImage(requestLine) + "\r\n"
+                + "Content-Type: image/" + this.getImageExtension(requestLine) + "\r\n"
                 + "Content-Length: " + httpParser.getContentLength(getResource(requestLine), true) + "\r\n"
                 + "\r\n";
     }
@@ -61,7 +51,7 @@ public class HTTPResponse {
         return Files.exists(getResource(requestLine));
     }
 
-    public String getImage(String requestLine) {
+    public String getImageExtension(String requestLine) {
         Pattern pattern = Pattern.compile("jpg|jpeg|png|gif|bmp");
         Matcher matcher = pattern.matcher(requestLine);
 
@@ -72,8 +62,16 @@ public class HTTPResponse {
         return null;
     }
 
-    public boolean isCSS(String requestLine) {
-        return requestLine.contains(".css");
+    public String getFileExtension(String requestLine) {
+        Pattern pattern = Pattern.compile("html|htm|js|css");
+        Matcher matcher = pattern.matcher(requestLine);
+
+        if(matcher.find()) {
+            if(matcher.group().equalsIgnoreCase("js")) return "javascript";
+            return matcher.group();
+        }
+
+        return "html";
     }
 
     public boolean isGET(String requestLine) {

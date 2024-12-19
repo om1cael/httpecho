@@ -44,12 +44,7 @@ public class HTTPServerThread implements Runnable {
             return;
         }
 
-        if(httpResponse.isCSS(requestLine)) {
-            dataToSend.writeUTF(httpResponse.getCSSResponse(requestLine));
-            return;
-        }
-
-        if(httpResponse.getImage(requestLine) != null) {
+        if(httpResponse.getImageExtension(requestLine) != null) {
             sendImage(dataToSend, httpResponse, httpParser, requestLine);
             return;
         }
