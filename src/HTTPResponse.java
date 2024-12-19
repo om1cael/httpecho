@@ -10,7 +10,17 @@ public class HTTPResponse {
                 + "Content-Type: text/html; charset=UTF-8\r\n"
                 + "Content-Length: " + httpParser.getContentLength(getResource(requestLine)) + "\r\n"
                 + "\r\n"
-                + httpParser.getHTMLContent(getResource(requestLine)).getFirst();
+                + httpParser.getResourceContent(getResource(requestLine));
+    }
+
+    public String getCSSResponse(String requestLine) {
+        HTTPParser httpParser = new HTTPParser();
+
+        return "HTTP/1.1 200 OK\r\n"
+                + "Content-Type: text/css; charset=UTF-8\r\n"
+                + "Content-Length: " + httpParser.getContentLength(getResource(requestLine)) + "\r\n"
+                + "\r\n"
+                + httpParser.getResourceContent(getResource(requestLine));
     }
 
     public String notFoundResponse() {
@@ -36,6 +46,10 @@ public class HTTPResponse {
 
     public boolean resourceExists(String requestLine) {
         return Files.exists(getResource(requestLine));
+    }
+
+    public boolean isCSS(String requestLine) {
+        return requestLine.contains(".css");
     }
 
     public boolean isGET(String requestLine) {
