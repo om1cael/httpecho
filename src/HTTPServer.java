@@ -4,7 +4,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Arrays;
 
 public class HTTPServer {
     public static void main(String[] args) {
@@ -14,6 +13,7 @@ public class HTTPServer {
             BufferedReader clientData = new BufferedReader(new InputStreamReader(socket.getInputStream()))
         ) {
             handleRequest(clientData, dataSend);
+            dataSend.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -21,10 +21,11 @@ public class HTTPServer {
 
     private static void handleRequest(BufferedReader request, PrintWriter dataSend) throws IOException {
         HTTPResponse httpResponse = new HTTPResponse();
+        HTTPParser httpParser = new HTTPParser();
         String requestLine = request.readLine();
 
         if(!httpResponse.isGET(requestLine)) {
-            dataSend.write(httpResponse.noGetResponse());
+            dataSend.write(httpResponse.notGetResponse());
             return;
         }
 
@@ -32,5 +33,7 @@ public class HTTPServer {
             dataSend.write(httpResponse.notFoundResponse());
             return;
         }
+
+        dataSend.write(httpResponse.getOKResponse(requestLine));
     }
 }

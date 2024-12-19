@@ -3,8 +3,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.Arrays;
 
 public class HTTPClient {
     final static String request =
@@ -22,6 +20,11 @@ public class HTTPClient {
         ) {
             dataSend.write(request);
             dataSend.flush();
+
+            String serverResponse;
+            while((serverResponse = dataReceived.readLine()) != null) {
+                System.out.println(serverResponse);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
