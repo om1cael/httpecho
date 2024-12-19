@@ -2,6 +2,8 @@
 
 **httpecho** is a simple HTTP server and client application written in Java. This project demonstrates basic HTTP communication by providing a basic HTTP server capable of handling GET requests, along with a client application to simulate these requests.
 
+![httpecho](https://github.com/user-attachments/assets/ff5195cc-0744-4c36-9105-d829b2bbcf12)
+
 ## Table of Contents
 
 - [Features](#features)
