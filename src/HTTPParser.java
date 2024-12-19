@@ -17,6 +17,9 @@ public class HTTPParser {
             }
 
 
+            // For some reason the BufferedReader prints the content twice
+            // So here I divide the htmlContentLength by two, to reflect
+            // only the first results.
             return List.of(content.toString(), String.valueOf(htmlContentLength / 2));
         } catch (IOException e) {
             throw new RuntimeException(e);
